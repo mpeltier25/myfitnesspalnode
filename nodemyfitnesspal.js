@@ -12,41 +12,40 @@ writemeasurestream.write(", Cholesterol");
 writemeasurestream.write(", Sodium");
 writemeasurestream.write(", Sugar");
 writemeasurestream.write(", Fiber");
-var date=new Date();
-var day=date.getDate();
-day = (day < 10 ? "0" : "") + day;
-var month=date.getMonth() + 1;
-month = (month < 10 ? "0" : "") + month;
-var year=date.getFullYear();
 var linereader=require('line-reader');
 	var lineNum = 0;
 	var columns = [];
 	var user = [];
-	function checkUser(user){
+	function processUser(user){
 			mfp.diaryStatusCheck(''+user, function(status) {
 					if(status=="public"){
-							mfp.fetchSingleDate(''+user, ''+year+'-'+month+'-'+day, 'all', function(data){
-									if(data['calories']!=undefined){
+							mfp.fetchDateRange(''+user, '2016-03-03', '2017-03-03', 'all', function(data){
+									if(data.data.length!=0 && data.data[0].date!="NaN-NaN-NaN"){
 									writemeasurestream.write("\n"+user);
 									writemeasurestream.write(","+status);
-									writemeasurestream.write(","+data['date']);
-									writemeasurestream.write(","+data['calories']);
-									writemeasurestream.write(","+data['carbs']);
-									writemeasurestream.write(","+data['fat']);
-									writemeasurestream.write(","+data['protein']);
-									writemeasurestream.write(","+data['cholesterol']);
-									writemeasurestream.write(","+data['sodium']);
-									writemeasurestream.write(","+data['sugar']);
-									writemeasurestream.write(","+data['fiber']);
+									writemeasurestream.write(","+JSON.parse(JSON.stringify(data.data[0].date)));
+									writemeasurestream.write(","+JSON.parse(data.data[0].calories));
+									writemeasurestream.write(","+JSON.parse(data.data[0].carbs));
+									writemeasurestream.write(","+JSON.parse(data.data[0].fat));
+									writemeasurestream.write(","+JSON.parse(data.data[0].protein));
+									writemeasurestream.write(","+JSON.parse(data.data[0].cholesterol));
+									writemeasurestream.write(","+JSON.parse(data.data[0].sodium));
+									writemeasurestream.write(","+JSON.parse(data.data[0].sugar));
+									writemeasurestream.write(","+JSON.parse(data.data[0].fiber));
 									}
 								else{
 								writemeasurestream.write("\n No data for "+user);
 								}
+								
+								
 							});
 					}
+					
 					else{
 						writemeasurestream.write("\n Sorry, this needs to be public "+status+" To read "+user+"'s data");
 					}
+					
+					
 			});
 }
 var linereader=require('line-reader');
@@ -54,6 +53,7 @@ var linereader=require('line-reader');
 	var columns = [];
 	var user = [];
 	linereader.eachLine('myfitnessusers.csv', function(line, last){
+			//console.log(lineNum + " - " + line);
 			// Get the column names
 			if (lineNum == 0) {
 				columns = line.toString().split(",");
@@ -69,7 +69,7 @@ var linereader=require('line-reader');
 	 		lineNum++;
 	 		if (last) {
 	 			for (var i = 0; i < user.length; i++) {
-	 			    checkUser(user[i].Userid); // pass just one user, in a for loop
+	 			    processUser(user[i].Userid);
 	 			}
 	 		}
 	});
