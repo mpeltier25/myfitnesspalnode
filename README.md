@@ -8,3 +8,5 @@ You will need two Packages in order to use this Node.js Script:
 ```npm install line-reader```
 
 More information about the Fitbit API can be found here: https://dev.fitbit.com/reference/web-api/quickstart/
+
+This falls under the GNU General Public License
